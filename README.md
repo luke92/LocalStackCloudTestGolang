@@ -38,4 +38,20 @@ Tests with LocalStackCloud and Golang with Amazon S3
 - You will see in the command line that LocalStack works in PORT `4566`
 - Enter in http://localhost:4566/ and you will see `{"status": "running"}`
 
+## Create S3 Bucket
+- Run `aws --endpoint-url=http://localhost:4566 s3 mb s3://test1`
 
+## Configure ACL (Permissions) in Bucket
+- Run `aws --endpoint-url=http://localhost:4566 s3api put-bucket-acl --bucket test1 --acl public-read`
+
+## Check in GUI the Bucket
+- https://app.localstack.cloud/resources/s3/test1
+
+# Golang Project
+- http://www.inanzzz.com/index.php/post/egpk/a-simple-aws-s3-example-with-golang-suing-localstack?ref=morioh.com&utm_source=morioh.com
+
+## Create Project
+- Run `go mod init github.com/luke92/LocalStackCloudTestGolang`
+
+## Run project
+- Run `go run --race main.go`
