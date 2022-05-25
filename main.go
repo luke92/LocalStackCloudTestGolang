@@ -12,10 +12,10 @@ func main() {
 	// Create a session instance.
 	ses, err := aws.New(aws.Config{
 		Address: "http://localhost:4566",
-		Region:  "eu-west-1",
+		Region:  "sa-east-1",
 		Profile: "localstack",
-		ID:      "test",
-		Secret:  "test",
+		ID:      "c7l59f",
+		Secret:  "03mhyk",
 	})
 	if err != nil {
 		log.Fatalln(err)

@@ -8,6 +8,10 @@ import (
 type BucketClient interface {
 	// Creates a new bucket.
 	Create(ctx context.Context, bucket string) error
+	// Check if exists bucket.
+	Exists(ctx context.Context, bucket string) (bool, error)
+	// Check if exists file
+	ExistsObject(ctx context.Context, bucket string, fileName string) (bool, error)
 	// Upload a new object to a bucket and returns its URL to view/download.
 	UploadObject(ctx context.Context, bucket, fileName string, body io.Reader) (string, error)
 	// Downloads an existing object from a bucket.

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
@@ -49,6 +50,43 @@ func (s S3) Create(ctx context.Context, bucket string) error {
 	}
 
 	return nil
+}
+
+func (s S3) Exists(ctx context.Context, bucket string) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, s.timeout)
+	defer cancel()
+
+	_, err := s.client.HeadBucketWithContext(ctx, &s3.HeadBucketInput{
+		Bucket: aws.String(bucket),
+	})
+
+	return getBooleanAndError(err)
+}
+
+func (s S3) ExistsObject(ctx context.Context, bucket, fileName string) (bool, error) {
+	ctx, cancel := context.WithTimeout(ctx, s.timeout)
+	defer cancel()
+
+	_, err := s.client.HeadObjectWithContext(ctx, &s3.HeadObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(fileName),
+	})
+	return getBooleanAndError(err)
+}
+
+func getBooleanAndError(err error) (bool, error) {
+	if err != nil {
+		if aerr, ok := err.(awserr.Error); ok {
+			switch aerr.Code() {
+			case "NotFound": // s3.ErrCodeNoSuchKey does not work, aws is missing this error code so we hardwire a string
+				return false, nil
+			default:
+				return false, err
+			}
+		}
+		return false, err
+	}
+	return true, nil
 }
 
 func (s S3) UploadObject(ctx context.Context, bucket, fileName string, body io.Reader) (string, error) {
